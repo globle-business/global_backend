@@ -1,24 +1,22 @@
 const jwt = require("jsonwebtoken");
 
-// ✅ AUTHENTICATE → verify tokens
+
+
+
+
 exports.authenticate = (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    // 🔥 GET TOKEN FROM COOKIE
+    const token = req.cookies.accessToken;
 
-    // check token exists
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!token) {
       return res.status(401).json({
         message: "Access denied. No token provided"
       });
     }
 
-    // extract token
-    const token = authHeader.split(" ")[1];
-
-    // verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // attach user data to request
     req.user = decoded;
 
     next();
@@ -29,7 +27,6 @@ exports.authenticate = (req, res, next) => {
     });
   }
 };
-
 // ✅ AUTHORIZE → check role
 exports.authorize = (...roles) => {
   return (req, res, next) => {

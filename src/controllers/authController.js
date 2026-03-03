@@ -180,49 +180,27 @@ exports.login = async (req, res) => {
     const userData = user.toObject();
     delete userData.password;
 
+    // ✅ Store tokens in HTTP-only cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax"
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 60 * 60 * 1000 // 1 hour
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax"
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
-
-  res.status(200).json({
-  message: "Login successful",
-  user: userData,
-  accessToken,   // ✅ ADD THIS
-  refreshToken   
-});
-  } catch (err) {
-    res.status(500).json({
-      message: "Internal Server error"
-    });
-  }
-};
-// all user api
-exports.getAllUser = async (req, res) => {
-  try {
-    const allUsers = await User.find().select("-password");
-
-    if (allUsers.length === 0) {
-      return res.status(200).json({
-        message: "No users found"
-      });
-    }
-    
 
     return res.status(200).json({
-      message: "All users fetched successfully",
-      totalUsers: allUsers.length,
-      users: allUsers
+      message: "Login successful",
+      user: userData
     });
 
-  } catch (error) {
+  } catch (err) {
     return res.status(500).json({
       message: "Internal Server error"
     });
