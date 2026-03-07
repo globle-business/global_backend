@@ -5,15 +5,30 @@ const {
   createEnquiry,
   getAllEnquiries,
   getSingleEnquiry,
-  deleteEnquiry
+  deleteEnquiry,
+  getMyEnquiries
 } = require("../controllers/enquiryController");
 
-// 🔹 USER
-router.post("/", createEnquiry);         // create enquiry
-router.get("/", getAllEnquiries);        // get all
+const { authenticate, authorize } = require("../middleware/auth.middleware");
 
-// 🔹 ADMIN / DETAILS
-router.get("/:id", getSingleEnquiry);    // get single by ID
-router.delete("/:id", deleteEnquiry);    // soft delete
+/* ================= USER ROUTES ================= */
+
+// create new enquiry
+router.post("/create-enquiry", authenticate, createEnquiry);
+
+// get logged in user's enquiries
+router.get("/my-enquiries", authenticate, getMyEnquiries);
+
+
+/* ================= ADMIN ROUTES ================= */
+
+// admin → get all enquiries
+router.get("/all-enquiries", authenticate, authorize("admin"), getAllEnquiries);
+
+// admin → get enquiry by id
+router.get("/enquiry/:id", authenticate, authorize("admin"), getSingleEnquiry);
+
+// admin → delete enquiry
+router.delete("/delete-enquiry/:id", authenticate, authorize("admin"), deleteEnquiry);
 
 module.exports = router;

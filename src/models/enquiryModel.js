@@ -28,21 +28,21 @@ const enquirySchema = new mongoose.Schema(
       required: true
     },
 
-    // // 🔹 Loan Info
-    // loanType: {
-    //   type: String,
-    //   enum: ["personal", "home", "car", "business"],
-    //   required: true
-    // },
-    // loanAmount: {
-    //   type: Number,
-    //   required: true
-    // },
-    // employmentStatus: {
-    //   type: String,
-    //   enum: ["employed", "self-employed", "unemployed"],
-    //   required: true
-    // },
+    // 🔹 Loan Info
+    loanType: {
+      type: String,
+      enum: ["personal", "home", "car", "business"],
+      required: true
+    },
+    loanAmount: {
+      type: Number,
+      required: true
+    },
+    employmentStatus: {
+      type: String,
+      enum: ["employed", "self-employed", "unemployed"],
+      required: true
+    },
 
     // 🔹 CRM Fields (Admin Side)
     enquiryStatus: {

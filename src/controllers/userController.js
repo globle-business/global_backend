@@ -51,7 +51,7 @@ exports.createUser = async (req, res) => {
     const newUser = await User.create({
       Username,
       email,
-      password,   // ⚠ Plain password (bcrypt not used)
+      password,   
       mobile
     });
 

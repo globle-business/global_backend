@@ -6,17 +6,28 @@ const {
   verifyOtp,
   signup,
   login,
-  getAllUser
+  // getAllUsers
 } = require("../controllers/authController");
 
-// ✅ IMPORT MIDDLEWARE (THIS WAS MISSING)
+const { authenticate, authorize } = require("../middleware/auth.middleware");
+const { getAllUsers } = require("../controllers/userController");
 
+/* ================= AUTH ================= */
 
 router.post("/send-otp", sendOtp);
+
 router.post("/verify-otp", verifyOtp);
+
 router.post("/signup", signup);
+
 router.post("/login", login);
 
+
+
+/* ================= ADMIN ================= */
+
+// admin → get all users
+router.get("/all-users", authenticate, authorize("admin"), getAllUsers);
 
 
 module.exports = router;

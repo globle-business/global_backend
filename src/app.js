@@ -36,12 +36,12 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const enquiryRoutes = require("./routes/enquiryRoutes");
 
-// ✅ Use routes (UPDATED 🔥)
-app.use("/api/auth", authRoutes);
-app.use("/api/user", userRoutes);
-
-// 🔥 CHANGE THIS LINE
+// ✅ Use routes
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/loan-enquiries", enquiryRoutes);
+
+
 
 // ✅ Test Route
 app.get("/", (req, res) => {

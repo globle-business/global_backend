@@ -12,20 +12,18 @@ const {
 
 const { authenticate } = require("../middleware/auth.middleware");
 
+// Protected Routes
 
-// 🔐 Protected Routes
+router.get("/all-users", authenticate, getAllUsers);
 
-router.get("/", authenticate, getAllUsers);
+router.post("/create-user", authenticate, createUser);
 
-router.post("/create", authenticate, createUser);
+router.get("/user/:id", authenticate, getSingleUser);
 
-router.get("/singleuser/:id", authenticate, getSingleUser);
+router.put("/update-user/:id", authenticate, updateUser);
 
-router.put("/update/:id", authenticate, updateUser);
+router.delete("/delete-user/:id", authenticate, deleteUser);
 
-router.delete("/delete/:id", authenticate, deleteUser);
-
-router.patch("/change-password/:id/change-password", authenticate, changePassword);
-
+router.patch("/change-password/:id", authenticate, changePassword);
 
 module.exports = router;

@@ -57,7 +57,7 @@ exports.verifyOtp = async (req, res) => {
 /* ================= SIGNUP ================= */
 exports.signup = async (req, res) => {
   try {
-    const { Username, password, email, mobile } = req.body;
+    const { Username, password, email, mobile, role } = req.body;
 
     const errors = [];
 
@@ -75,6 +75,7 @@ exports.signup = async (req, res) => {
 
     // email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailPattern.test(email)) {
       return res.status(400).json({
         message: "Invalid email format"
@@ -83,59 +84,61 @@ exports.signup = async (req, res) => {
 
     // mobile validation
     const mobilePattern = /^[6-9]\d{9}$/;
+
     if (!mobilePattern.test(mobile)) {
       return res.status(400).json({
         message: "Invalid mobile number"
       });
     }
 
-    // check user exists
+    // check email exists
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
       return res.status(409).json({
         message: "Email already exists"
       });
     }
 
+    // check mobile exists
     const existingMobile = await User.findOne({ mobile });
+
     if (existingMobile) {
       return res.status(409).json({
         message: "Mobile already exists"
       });
     }
 
-    // ✅ IMPORTANT: OTP must NOT exist (means already verified)
+    // check OTP verification
     const otpStillExists = await Otp.findOne({ sendBy: email });
+
     if (otpStillExists) {
       return res.status(400).json({
         message: "Please verify OTP first"
       });
     }
 
-    // hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser = await User.create({
       Username,
       email,
-      password: hashedPassword,
+      password, // saved normally
       mobile,
+      role: role || "user",
       isemailverified: true
     });
-    const checkUser = await User.findById(newUser._id);
-console.log("User fetched after save:", checkUser);
 
     res.status(201).json({
       message: "Signup successful",
       user: {
         id: newUser._id,
-        email: newUser.email
+        email: newUser.email,
+        role: newUser.role
       }
     });
 
   } catch (err) {
     res.status(500).json({
-      message: "Internal Server error",
+      message: "Internal Server Error",
       error: err.message
     });
   }
@@ -144,6 +147,7 @@ console.log("User fetched after save:", checkUser);
 /* ================= LOGIN ================= */
 exports.login = async (req, res) => {
   try {
+
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -166,13 +170,16 @@ exports.login = async (req, res) => {
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
+    // password check (no bcrypt)
+    if (password !== user.password) {
       return res.status(401).json({
         message: "Invalid credentials"
       });
     }
+
+    // ✅ Update last login time
+    user.lastLogin = new Date();
+    await user.save();
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
@@ -180,30 +187,28 @@ exports.login = async (req, res) => {
     const userData = user.toObject();
     delete userData.password;
 
-    // ✅ Store tokens in HTTP-only cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 60 * 60 * 1000 // 1 hour
+      maxAge: 60 * 60 * 1000
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "Login successful",
+      role: user.role,
+      lastLogin: user.lastLogin,
       user: userData
     });
 
   } catch (err) {
-    return res.status(500).json({
-      message: "Internal Server error"
+
+    res.status(500).json({
+      message: "Internal Server Error"
     });
+
   }
 };
-
