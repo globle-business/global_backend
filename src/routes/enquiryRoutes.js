@@ -6,7 +6,8 @@ const {
   getAllEnquiries,
   getSingleEnquiry,
   deleteEnquiry,
-  getMyEnquiries
+  getMyEnquiries,
+    getLoanTypes
 } = require("../controllers/enquiryController");
 
 const { authenticate, authorize } = require("../middleware/auth.middleware");
@@ -30,5 +31,8 @@ router.get("/enquiry/:id", authenticate, authorize("admin"), getSingleEnquiry);
 
 // admin → delete enquiry
 router.delete("/delete-enquiry/:id", authenticate, authorize("admin"), deleteEnquiry);
+
+// get loan types
+router.get("/loan-types", getLoanTypes);
 
 module.exports = router;
