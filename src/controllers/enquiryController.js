@@ -203,3 +203,29 @@ exports.deleteEnquiry = async (req, res) => {
   }
 
 };
+
+
+
+/* ================= GET LOAN TYPES ================= */
+
+exports.getLoanTypes = async (req, res) => {
+
+  try {
+
+    const loanTypes = ["personal", "home", "car", "business"];
+
+    res.status(200).json({
+      success: true,
+      message: "Loan types fetched successfully",
+      loanTypes
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: "Internal Server Error"
+    });
+
+  }
+
+};
