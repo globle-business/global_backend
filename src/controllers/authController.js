@@ -2,7 +2,7 @@ const User = require("../models/UserModel");
 const Otp = require("../models/otpModel");
 const bcrypt = require("bcryptjs");
 const { generateAccessToken, generateRefreshToken } = require("../utils/token");
-
+//login controller
 /* ================= GENERATE OTP ================= */
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
