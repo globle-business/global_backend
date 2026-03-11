@@ -1,4 +1,5 @@
 const Enquiry = require("../models/EnquiryModel");
+const LoanType = require("../models/loanType.model");
 
 /* ================= CREATE ENQUIRY ================= */
 exports.createEnquiry = async (req, res) => {
@@ -204,6 +205,48 @@ exports.deleteEnquiry = async (req, res) => {
 
 };
 
+exports.addLoanType = async (req, res) => {
+  try {
+
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({
+        message: "Loan type name is required"
+      });
+    }
+
+    // check duplicate
+    const existingLoan = await LoanType.findOne({ name });
+
+    if (existingLoan) {
+      return res.status(400).json({
+        message: "Loan type already exists"
+      });
+    }
+
+    const loanType = await LoanType.create({
+      name
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Loan type created successfully",
+      data: loanType
+    });
+
+  } catch (error) {
+
+    console.log(error); 
+
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message
+    });
+
+  }
+};
+
 
 
 /* ================= GET LOAN TYPES ================= */
@@ -218,6 +261,42 @@ exports.getLoanTypes = async (req, res) => {
       success: true,
       message: "Loan types fetched successfully",
       loanTypes
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: "Internal Server Error"
+    });
+
+  }
+
+};
+
+exports.toggleLoanType = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    const loanType = await LoanType.findById(id);
+
+    if (!loanType) {
+      return res.status(404).json({
+        message: "Loan type not found"
+      });
+    }
+
+    loanType.isActive = !loanType.isActive;
+
+    await loanType.save();
+
+    res.status(200).json({
+      success: true,
+      message: loanType.isActive
+        ? "Loan type activated"
+        : "Loan type deactivated",
+      data: loanType
     });
 
   } catch (error) {

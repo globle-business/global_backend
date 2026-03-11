@@ -35,11 +35,13 @@ app.use(cookieParser());
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const enquiryRoutes = require("./routes/enquiryRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 // ✅ Use routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/loan-enquiries", enquiryRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 
 
 
