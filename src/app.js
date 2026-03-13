@@ -8,7 +8,7 @@ const app = express();
 // ✅ Allowed origins
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://react-vite-lyart-phi.vercel.app"
+  "https://react-vite-roan-eight.vercel.app/"
 ];
 
 // ✅ CORS configuration
