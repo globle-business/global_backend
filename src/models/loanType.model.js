@@ -6,7 +6,7 @@ const loanTypeSchema = new mongoose.Schema(
     type: String,
     required: true,
     unique: true,
-    enum: ["personal", "home", "car", "business"]
+    enum: ["personal", "home", "car", "business","education"]
   },
 
   isActive: {
